@@ -1,4 +1,4 @@
-import { Activity, Users, Award, Lock, Eye, EyeOff, Download, Search, ArrowUpDown, ChevronUp, ChevronDown, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Activity, Users, Award, Lock, Eye, EyeOff, Download, Search, ArrowUpDown, ChevronUp, ChevronDown, TrendingUp, AlertTriangle, Trophy, Medal, Crown } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -154,6 +154,12 @@ export default function Deficiencies() {
       { event: 'Run', avg: events.run_score.count ? parseFloat((events.run_score.total / events.run_score.count).toFixed(2)) : 0 },
       { event: 'Pull-ups', avg: events.pullups_score.count ? parseFloat((events.pullups_score.total / events.pullups_score.count).toFixed(2)) : 0 },
     ];
+  }, [filteredData]);
+
+  const topCadets = useMemo(() => {
+    const tested = filteredData.filter(r => r.pft_total && r.pft_total !== '');
+    const sorted = [...tested].sort((a, b) => parseFloat(b.pft_total) - parseFloat(a.pft_total));
+    return sorted.slice(0, 3);
   }, [filteredData]);
 
   const cadetsOfConcern = useMemo(() => {
@@ -408,6 +414,56 @@ export default function Deficiencies() {
           <p className="text-muted" style={{ margin: '4px 0 0', fontSize: '0.78rem' }}>cadets with scores</p>
         </div>
       </div>
+
+      {/* TOP CADETS STAGE RAMP */}
+      {topCadets.length >= 3 && (
+        <div className="glass-panel" style={{ padding: '32px 24px', marginBottom: '24px', textAlign: 'center' }}>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: 'var(--text-primary)' }}>
+            <Trophy size={24} style={{ color: '#FBBF24' }} />
+            {classFilter !== 'All' ? `${classFilter} Top Performers` : 'Overall Top Performers'}
+          </h3>
+          <p className="text-muted" style={{ marginBottom: '32px', fontSize: '0.9rem' }}>Outstanding Athletic Excellence</p>
+          
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: '16px', minHeight: '220px', flexWrap: 'wrap' }}>
+            {/* 2nd Place */}
+            <div style={{ flex: '1 1 120px', maxWidth: '160px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ marginBottom: '12px' }}>
+                <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{topCadets[1].cadet}</div>
+                <div className="text-muted" style={{ fontSize: '0.75rem' }}>{topCadets[1].company} Co. • {topCadets[1].class}</div>
+              </div>
+              <div style={{ width: '100%', height: '120px', background: 'linear-gradient(to top, rgba(255,255,255,0.05), rgba(255,255,255,0.15))', borderRadius: '12px 12px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingTop: '16px', borderTop: '4px solid #C0C0C0', borderLeft: '1px solid rgba(255,255,255,0.05)', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
+                <Medal size={28} style={{ color: '#C0C0C0', marginBottom: '8px' }} />
+                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#C0C0C0' }}>{parseFloat(topCadets[1].pft_total).toFixed(2)}</div>
+              </div>
+            </div>
+
+            {/* 1st Place */}
+            <div style={{ flex: '1 1 140px', maxWidth: '180px', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
+              <div style={{ marginBottom: '16px' }}>
+                <Crown size={24} style={{ color: '#FBBF24', margin: '0 auto 8px' }} />
+                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ccff00', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{topCadets[0].cadet}</div>
+                <div className="text-muted" style={{ fontSize: '0.8rem' }}>{topCadets[0].company} Co. • {topCadets[0].class}</div>
+              </div>
+              <div style={{ width: '100%', height: '160px', background: 'linear-gradient(to top, rgba(204,255,0,0.05), rgba(204,255,0,0.15))', borderRadius: '12px 12px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingTop: '16px', borderTop: '4px solid #ccff00', borderLeft: '1px solid rgba(204,255,0,0.1)', borderRight: '1px solid rgba(204,255,0,0.1)', boxShadow: '0 -10px 20px rgba(204,255,0,0.1)' }}>
+                <Medal size={36} style={{ color: '#FBBF24', marginBottom: '8px' }} />
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#ccff00' }}>{parseFloat(topCadets[0].pft_total).toFixed(2)}</div>
+              </div>
+            </div>
+
+            {/* 3rd Place */}
+            <div style={{ flex: '1 1 120px', maxWidth: '160px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ marginBottom: '12px' }}>
+                <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{topCadets[2].cadet}</div>
+                <div className="text-muted" style={{ fontSize: '0.75rem' }}>{topCadets[2].company} Co. • {topCadets[2].class}</div>
+              </div>
+              <div style={{ width: '100%', height: '100px', background: 'linear-gradient(to top, rgba(255,255,255,0.02), rgba(255,255,255,0.08))', borderRadius: '12px 12px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingTop: '16px', borderTop: '4px solid #CD7F32', borderLeft: '1px solid rgba(255,255,255,0.05)', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
+                <Medal size={24} style={{ color: '#CD7F32', marginBottom: '8px' }} />
+                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#CD7F32' }}>{parseFloat(topCadets[2].pft_total).toFixed(2)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* CHARTS ROW */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '16px', marginBottom: '24px' }}>
