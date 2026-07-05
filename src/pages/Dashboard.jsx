@@ -1,4 +1,4 @@
-import { Bell, AlertCircle, TrendingUp, Quote } from 'lucide-react';
+import { Bell, AlertCircle, TrendingUp, Quote, Home } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -94,21 +94,42 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const stats = [
-    { label: 'Active Announcements', value: announcements.length || '0', icon: <Bell size={18} />, trend: 'View Feed', path: '/announcements' },
-    { label: 'Total Deficiencies', value: new Set(deficiencies.map(d => d.cadet).filter(Boolean)).size || '0', icon: <AlertCircle size={18} />, trend: 'View Board', path: '/deficiencies' },
-    { label: 'Upcoming Classes', value: '4CL-1CL', icon: <TrendingUp size={18} />, trend: 'View Schedule', path: '/schedule' },
+    { label: 'Active Announcements', value: announcements.length || '0', icon: <Bell size={16} />, trend: '+12% This month', path: '/announcements' },
+    { label: 'Total Deficiencies', value: new Set(deficiencies.map(d => d.cadet).filter(Boolean)).size || '0', icon: <AlertCircle size={16} />, trend: '+5% This month', path: '/deficiencies' },
+    { label: 'Upcoming Classes', value: '12', icon: <TrendingUp size={16} />, trend: 'Steady', path: '/schedule' },
+    { label: 'Council Activity', value: '89%', icon: <Bell size={16} />, trend: '+2% This week', path: '/' },
   ];
 
   return (
-    <div className="dashboard">
-      <div className="flex-between" style={{ marginBottom: '2rem' }}>
-        <div>
-          <h1>Athletic Council Dashboard</h1>
-          <p className="text-muted">Overview • April 2026</p>
+    <div className="dashboard" style={{ marginTop: '1rem' }}>
+      <div className="flex-between" style={{ marginBottom: '2.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ background: 'var(--accent-primary)', color: '#1a1a1a', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Home size={24} />
+          </div>
+          <h1 style={{ margin: 0, fontSize: '2.2rem' }}>Dashboard</h1>
+        </div>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button style={{ 
+            background: 'var(--surface-glass)', 
+            border: '1px solid var(--surface-border)', 
+            color: 'var(--text-primary)', 
+            padding: '0.6rem 1.25rem', 
+            borderRadius: '9999px',
+            fontSize: '0.85rem',
+            fontWeight: 500,
+            cursor: 'pointer'
+          }}>★ All Product</button>
+          <button className="btn btn-primary">Current Report ▼</button>
         </div>
       </div>
 
-      <div className="grid-cols-2" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', marginBottom: '2rem', gap: '1.5rem' }}>
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
+        gap: '1.5rem', 
+        marginBottom: '2.5rem' 
+      }}>
         {stats.map((stat, i) => (
           <div 
             key={i} 
@@ -117,26 +138,66 @@ export default function Dashboard() {
             style={{ 
               display: 'flex', 
               flexDirection: 'column', 
-              padding: '1.25rem',
+              padding: '1.5rem',
               cursor: 'pointer',
-              transition: 'transform 0.2s ease, background 0.2s ease'
+              background: i === 0 ? 'var(--accent-primary)' : 'var(--surface-glass)',
+              color: i === 0 ? '#1a1a1a' : 'var(--text-primary)',
+              position: 'relative',
+              overflow: 'hidden',
+              borderRadius: '24px'
             }}
           >
-            <div className="flex-between" style={{ alignItems: 'center', marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <div style={{ border: '1px solid var(--surface-border)', padding: '0.4rem', borderRadius: 'var(--radius-sm)', display: 'flex', background: 'var(--bg-color)', color: 'var(--text-primary)' }}>
-                  {stat.icon}
-                </div>
-                <span className="text-muted" style={{ fontWeight: 500, fontSize: '0.85rem' }}>{stat.label}</span>
+            {/* Subtle Gradient Glow for First Card */}
+            {i === 0 && (
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at top left, rgba(255,255,255,0.4) 0%, transparent 60%)', pointerEvents: 'none' }} />
+            )}
+            
+            <div className="flex-between" style={{ alignItems: 'flex-start', marginBottom: '2rem', position: 'relative', zIndex: 1 }}>
+              <div style={{ 
+                background: i === 0 ? 'rgba(0,0,0,0.15)' : 'var(--accent-primary)', 
+                color: '#1a1a1a',
+                padding: '0.5rem', 
+                borderRadius: '50%', 
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                {stat.icon}
               </div>
-              {i === 0 && <span style={{ color: 'var(--success)', fontSize: '0.75rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}><div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--success)' }}></div> Active</span>}
+              <span style={{ 
+                fontWeight: 500, 
+                fontSize: '0.9rem',
+                color: i === 0 ? '#1a1a1a' : 'var(--text-primary)'
+              }}>{stat.label}</span>
             </div>
             
-            <h3 style={{ fontSize: '2.5rem', fontWeight: 600, margin: 0, lineHeight: 1 }}>{stat.value}</h3>
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <h3 style={{ 
+                fontSize: '2.2rem', 
+                fontWeight: 700, 
+                margin: 0, 
+                lineHeight: 1,
+                color: i === 0 ? '#1a1a1a' : 'var(--text-primary)'
+              }}>{stat.value}</h3>
+              
+              <div style={{ 
+                marginTop: '0.75rem', 
+                fontSize: '0.75rem', 
+                fontWeight: 600,
+                color: i === 0 ? 'rgba(0,0,0,0.6)' : 'var(--accent-primary)', 
+                display: 'flex', 
+                alignItems: 'center',
+                gap: '0.3rem'
+              }}>
+                <TrendingUp size={12} /> {stat.trend}
+              </div>
+            </div>
             
-            <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--surface-border)', fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between' }}>
-              <span>{stat.trend}</span>
-              <span style={{ fontSize: '1rem', lineHeight: 1 }}>→</span>
+            {/* Mock Chart Bars */}
+            <div style={{ position: 'absolute', bottom: '1.5rem', right: '1.5rem', display: 'flex', alignItems: 'flex-end', gap: '4px', height: '40px', opacity: i === 0 ? 0.6 : 0.8 }}>
+              {[0.4, 0.7, 0.5, 0.9, 0.6].map((h, j) => (
+                <div key={j} style={{ width: '8px', height: (h * 100) + '%', background: i === 0 ? '#1a1a1a' : 'var(--accent-primary)', borderRadius: '4px' }} />
+              ))}
             </div>
           </div>
         ))}
