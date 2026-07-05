@@ -518,7 +518,7 @@ export default function Deficiencies() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--surface-border)' }}>
-                  {['Cadet', 'Class', 'Company', 'Push-ups', 'Sit-ups', 'Run', 'Pull-ups', 'PFT Total'].map(h => (
+                  {['#', 'Cadet', 'Class', 'Company', 'Push-ups', 'Sit-ups', 'Run', 'Pull-ups', 'PFT Total'].map(h => (
                     <th key={h} style={{ padding: '10px 12px', textAlign: 'left', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{h}</th>
                   ))}
                 </tr>
@@ -526,6 +526,7 @@ export default function Deficiencies() {
               <tbody>
                 {cadetsOfConcern.map((r, i) => (
                   <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)' }}>
+                    <td style={{ padding: '10px 12px', color: 'var(--text-secondary)', fontWeight: 600 }}>{i + 1}</td>
                     <td style={{ padding: '10px 12px', fontWeight: 600 }}>{r.cadet}</td>
                     <td style={{ padding: '10px 12px', color: 'var(--text-secondary)' }}>{r.class}</td>
                     <td style={{ padding: '10px 12px', color: 'var(--text-secondary)' }}>{COMPANY_NAMES[r.company] || r.company}</td>
@@ -554,6 +555,7 @@ export default function Deficiencies() {
             <thead>
               <tr style={{ borderBottom: '1px solid var(--surface-border)' }}>
                 {[
+                  { label: '#', field: null },
                   { label: 'Cadet', field: 'cadet' },
                   { label: 'CN', field: null },
                   { label: 'Class', field: null },
@@ -584,7 +586,7 @@ export default function Deficiencies() {
             <tbody>
               {filteredData.length === 0 ? (
                 <tr>
-                  <td colSpan={9} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>No cadets found matching your filters.</td>
+                  <td colSpan={10} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>No cadets found matching your filters.</td>
                 </tr>
               ) : (
                 filteredData.map((r, i) => (
@@ -592,6 +594,7 @@ export default function Deficiencies() {
                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(204,255,0,0.03)'}
                     onMouseLeave={e => e.currentTarget.style.background = i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)'}
                   >
+                    <td style={{ padding: '10px 12px', color: 'var(--text-secondary)', fontWeight: 600 }}>{i + 1}</td>
                     <td style={{ padding: '10px 12px', fontWeight: 600, whiteSpace: 'nowrap' }}>{r.cadet}</td>
                     <td style={{ padding: '10px 12px', color: 'var(--text-secondary)', fontFamily: 'monospace', fontSize: '0.8rem' }}>{r.cn || '—'}</td>
                     <td style={{ padding: '10px 12px' }}>
