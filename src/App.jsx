@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import React, { lazy, Suspense, useState, useEffect } from 'react';
-import { Home, Bell, BookOpen, ShieldAlert, Calendar, Menu, X, Info, MessageSquare, Search, Zap, FileText } from 'lucide-react';
+import { Home, Bell, BookOpen, ShieldAlert, Calendar, Menu, X, Info, Search, Zap, FileText } from 'lucide-react';
 import { SpeedInsights } from "@vercel/speed-insights/react";
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -107,45 +107,6 @@ function Layout({ children }) {
             />
           </div>
 
-          {/* Right Icons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <button style={{ 
-              background: 'var(--surface-glass)', 
-              border: '1px solid var(--surface-border)', 
-              borderRadius: '50%', 
-              width: '40px', 
-              height: '40px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              color: 'var(--text-primary)',
-              cursor: 'pointer'
-            }}>
-              <MessageSquare size={18} />
-            </button>
-            <button style={{ 
-              background: 'var(--surface-glass)', 
-              border: '1px solid var(--surface-border)', 
-              borderRadius: '50%', 
-              width: '40px', 
-              height: '40px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              color: 'var(--text-primary)',
-              cursor: 'pointer'
-            }}>
-              <Bell size={18} />
-            </button>
-            <div style={{ 
-              width: '40px', 
-              height: '40px', 
-              borderRadius: '50%', 
-              background: 'url("https://api.dicebear.com/7.x/avataaars/svg?seed=Felix") center/cover',
-              border: '2px solid var(--accent-primary)',
-              cursor: 'pointer'
-            }} />
-          </div>
         </header>
 
         <div className="page-container" style={{ paddingTop: '0' }}>
