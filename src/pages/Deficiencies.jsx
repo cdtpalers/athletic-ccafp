@@ -50,6 +50,7 @@ export default function Deficiencies() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState('pft_total');
   const [sortDirection, setSortDirection] = useState('desc');
+  const [showConcern, setShowConcern] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -281,11 +282,18 @@ export default function Deficiencies() {
             <p className="text-muted" style={{ margin: 0, fontSize: '0.85rem' }}>PFT Results &amp; Analytics</p>
           </div>
         </div>
-        <button className="btn btn-primary" onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '10px', fontWeight: 600, cursor: 'pointer' }}>
-          <Download size={16} /> Export CSV
-        </button>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <button onClick={() => setShowConcern(!showConcern)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '10px', fontWeight: 600, cursor: 'pointer', background: 'rgba(255, 71, 87, 0.1)', color: '#ff4757', border: '1px solid rgba(255, 71, 87, 0.2)', transition: 'all 0.2s' }}>
+            <AlertTriangle size={16} /> {showConcern ? 'Back to PFT Scores' : `Cadets of Concern (${cadetsOfConcern.length})`}
+          </button>
+          <button className="btn btn-primary" onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '10px', fontWeight: 600, cursor: 'pointer' }}>
+            <Download size={16} /> Export CSV
+          </button>
+        </div>
       </div>
 
+      {!showConcern && (
+        <>
       {/* FILTERS */}
       <div className="glass-panel" style={{ padding: '16px 20px', marginBottom: '24px' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center' }}>
@@ -508,8 +516,11 @@ export default function Deficiencies() {
         </div>
       </div>
 
+        </>
+      )}
+
       {/* CADETS OF CONCERN */}
-      {cadetsOfConcern.length > 0 && (
+      {showConcern && (
         <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px', borderLeft: '3px solid #ff4757' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', color: '#ff4757' }}>
             <AlertTriangle size={18} /> Cadets of Concern ({cadetsOfConcern.length})
@@ -543,6 +554,8 @@ export default function Deficiencies() {
         </div>
       )}
 
+      {!showConcern && (
+        <>
       {/* MAIN DATA TABLE */}
       <div className="glass-panel" style={{ padding: '24px' }}>
         <div className="flex-between" style={{ marginBottom: '16px' }}>
@@ -641,6 +654,8 @@ export default function Deficiencies() {
           </table>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }
