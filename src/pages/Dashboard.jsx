@@ -1,4 +1,4 @@
-import { Bell, AlertCircle, TrendingUp, Quote, Home } from 'lucide-react';
+import { Bell, AlertCircle, TrendingUp, Quote, Home, Activity } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -58,12 +58,11 @@ function parseCSV(csv) {
 
 export default function Dashboard() {
   const [announcements, setAnnouncements] = useState([]);
-  const [deficiencies, setDeficiencies] = useState([]);
+  const [pftData, setPftData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // 🔴 PASTE YOUR CSV LINKS HERE (Same as the ones in other pages)
   const ANNOUNCEMENTS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQODxASqFgFWPJObis_gXQ-mcN31Kfqn1p0rRriC00czwJ_QZadUp1MQscXRGVwB1vZKP0xAvsBJI3J/pub?gid=0&single=true&output=csv';
-  const DEFICIENCIES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyMaWhymCt9ILdDWzRItpgd44kbvhGQR5SJHJzoVoCeRPX1WLMKTYB04Q6TmyXLR_ZqU2VDdi7EhEj/pub?gid=0&single=true&output=csv';
 
   useEffect(() => {
     async function fetchData() {
@@ -74,13 +73,13 @@ export default function Dashboard() {
           return parseCSV(await res.text());
         };
 
-        const [annData, defData] = await Promise.all([
+        const [annData, pftRaw] = await Promise.all([
           fetchCSV(ANNOUNCEMENTS_CSV_URL),
-          fetchCSV(DEFICIENCIES_CSV_URL)
+          fetchCSV('/pft_results.csv')
         ]);
 
         setAnnouncements(annData);
-        setDeficiencies(defData);
+        setPftData(pftRaw);
 
         setLoading(false);
       } catch (error) {
@@ -93,9 +92,14 @@ export default function Dashboard() {
 
   const navigate = useNavigate();
 
+  const testedCadets = pftData.filter(d => d.pft_total && d.pft_total !== '');
+  const avgPft = testedCadets.length > 0
+    ? (testedCadets.reduce((s, d) => s + parseFloat(d.pft_total), 0) / testedCadets.length).toFixed(2)
+    : '—';
+
   const stats = [
-    { label: 'Active Announcements', value: announcements.length || '0', icon: <Bell size={16} />, trend: '+12% This month', path: '/announcements' },
-    { label: 'Total Deficiencies', value: new Set(deficiencies.map(d => d.cadet).filter(Boolean)).size || '0', icon: <AlertCircle size={16} />, trend: '+5% This month', path: '/deficiencies' },
+    { label: 'Active Announcements', value: announcements.length || '0', icon: <Bell size={16} />, trend: 'View Feed', path: '/announcements' },
+    { label: 'Avg PFT Score', value: avgPft, icon: <Activity size={16} />, trend: testedCadets.length + ' cadets tested', path: '/deficiencies' },
     { label: 'Upcoming Classes', value: '12', icon: <TrendingUp size={16} />, trend: 'Steady', path: '/schedule' },
     { label: 'Council Activity', value: '89%', icon: <Bell size={16} />, trend: '+2% This week', path: '/' },
   ];

@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import React, { lazy, Suspense, useState, useEffect } from 'react';
-import { Home, Bell, BookOpen, ShieldAlert, Calendar, Menu, X, Info, Search, Zap, FileText } from 'lucide-react';
+import { Home, Bell, BookOpen, Activity, Calendar, Menu, X, Info, Search, Zap, FileText } from 'lucide-react';
 import { SpeedInsights } from "@vercel/speed-insights/react";
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -21,7 +21,7 @@ function Layout({ children }) {
   const navItems = [
     { path: '/', label: 'Overview', icon: <Home size={22} /> },
     { path: '/announcements', label: 'Announcements', icon: <Bell size={22} /> },
-    { path: '/deficiencies', label: 'Deficiencies', icon: <ShieldAlert size={22} /> },
+    { path: '/deficiencies', label: 'PFT Tracker', icon: <Activity size={22} /> },
     { path: '/schedule', label: 'HAG CLASS SCHED', icon: <Calendar size={22} /> },
     { path: '/grades', label: 'Grade Reports', icon: <FileText size={22} /> },
     { path: '/about', label: 'About', icon: <Info size={22} /> }
