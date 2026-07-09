@@ -446,8 +446,9 @@ export default function Dashboard() {
         </div>
       ) : (
         <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
+          display: 'flex', 
+          flexWrap: 'wrap', 
+          justifyContent: 'center', 
           gap: '1rem' 
         }}>
           {hallOfFame.map((fame, i) => (
@@ -455,17 +456,18 @@ export default function Dashboard() {
               key={i} 
               className="glass-card" 
               style={{ 
-                padding: '1.5rem 1rem', 
+                flex: i === 0 ? '1 1 100%' : '1 1 180px',
+                maxWidth: i === 0 ? '100%' : '240px',
+                padding: i === 0 ? '1.5rem 1rem' : '1.25rem 0.75rem', 
                 position: 'relative', 
                 overflow: 'hidden', 
                 display: 'flex', 
                 flexDirection: 'column', 
                 alignItems: 'center', 
                 textAlign: 'center',
-                gridColumn: i === 0 ? '1 / -1' : 'auto', // Top Cadet spans full width
                 background: i === 0 ? 'linear-gradient(145deg, rgba(251, 191, 36, 0.1) 0%, var(--surface-glass) 100%)' : 'var(--surface-glass)',
                 border: i === 0 ? '1px solid rgba(251, 191, 36, 0.3)' : '1px solid var(--surface-border)',
-                minHeight: i === 0 ? '240px' : '220px',
+                minHeight: i === 0 ? '200px' : '180px',
                 boxShadow: i === 0 ? '0 10px 40px rgba(251, 191, 36, 0.1)' : 'var(--shadow-md)',
                 borderRadius: '24px',
                 transition: 'transform 0.3s ease, box-shadow 0.3s ease'
@@ -487,22 +489,23 @@ export default function Dashboard() {
 
               {/* Icon Container */}
               <div style={{ 
-                marginBottom: '1rem', 
+                marginBottom: '0.75rem', 
                 background: fame.bg, 
-                padding: '1rem', 
+                padding: '0.75rem', 
                 borderRadius: '50%', 
                 display: 'inline-flex',
-                boxShadow: `0 0 20px ${fame.bg}`
+                boxShadow: `0 0 15px ${fame.bg}`,
+                transform: 'scale(0.85)' // Shrink the stickman SVGs to be more compact
               }}>
                 {fame.icon}
               </div>
 
               <h4 style={{ 
                 color: fame.color, 
-                fontSize: i === 0 ? '1.25rem' : '1rem', 
+                fontSize: i === 0 ? '1rem' : '0.85rem', 
                 textTransform: 'uppercase', 
-                letterSpacing: '1.5px', 
-                marginBottom: '1rem',
+                letterSpacing: '1px', 
+                marginBottom: '0.75rem',
                 fontWeight: 800
               }}>
                 {fame.title}
@@ -511,40 +514,44 @@ export default function Dashboard() {
               {fame.cadet ? (
                 <>
                   <div style={{ 
-                    fontSize: i === 0 ? '2.8rem' : '1.8rem', 
+                    fontSize: i === 0 ? '2rem' : '1.4rem', 
                     fontWeight: 800, 
                     color: 'var(--text-primary)', 
-                    marginBottom: '0.75rem',
+                    marginBottom: '0.5rem',
                     lineHeight: 1.1,
                     textShadow: '0 2px 10px rgba(0,0,0,0.5)'
                   }}>
                     {fame.cadet.cadet}
                   </div>
                   
-                  <div className="flex-center text-muted" style={{ gap: '0.75rem', fontSize: '0.9rem', marginBottom: '2rem', fontWeight: 600 }}>
-                    <span style={{ background: 'rgba(255,255,255,0.05)', padding: '0.35rem 0.8rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div className="flex-center text-muted" style={{ gap: '0.5rem', fontSize: '0.75rem', marginBottom: '1.25rem', fontWeight: 600 }}>
+                    <span style={{ background: 'rgba(255,255,255,0.05)', padding: '0.25rem 0.6rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }}>
                       {fame.cadet.class}
                     </span>
-                    <span style={{ background: 'rgba(255,255,255,0.05)', padding: '0.35rem 0.8rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <span style={{ background: 'rgba(255,255,255,0.05)', padding: '0.25rem 0.6rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }}>
                       Co. {fame.cadet.company}
                     </span>
                   </div>
 
                   <div style={{ 
-                    fontSize: i === 0 ? '4rem' : '3rem', 
-                    fontWeight: 900, 
-                    color: fame.color,
-                    marginTop: 'auto',
-                    lineHeight: 1,
-                    textShadow: `0 0 30px ${fame.color}50`
+                    marginTop: 'auto', 
+                    paddingTop: '1rem',
+                    borderTop: '1px solid rgba(255,255,255,0.05)',
+                    width: '100%'
                   }}>
-                    {fame.score}
+                    <div style={{ 
+                      fontSize: i === 0 ? '3rem' : '2.2rem', 
+                      fontWeight: 800, 
+                      color: fame.color,
+                      lineHeight: 1,
+                      textShadow: `0 0 20px ${fame.bg}`
+                    }}>
+                      {fame.score}
+                    </div>
                   </div>
                 </>
               ) : (
-                <div style={{ marginTop: 'auto', color: 'var(--text-muted)', fontSize: '1.2rem', fontStyle: 'italic' }}>
-                  No data available
-                </div>
+                <div className="text-muted" style={{ marginTop: '2rem' }}>No data</div>
               )}
             </div>
           ))}
