@@ -182,6 +182,7 @@ export default function Dashboard() {
   let topSitups = null;
   let topRun = null;
   let topPullups = null;
+  let topFlexHang = null;
 
   filteredData.forEach(d => {
     // Top Cadet
@@ -217,11 +218,17 @@ export default function Dashboard() {
       }
     }
 
-    // Top Pullups
+    // Top Pullups & Flex-arm Hang
     if (d.pullups_raw && d.pullups_raw.trim() !== '') {
       const pl = parseInt(d.pullups_raw, 10) || 0;
-      if (!topPullups || pl > (parseInt(topPullups.pullups_raw, 10) || 0)) {
-        topPullups = d;
+      if (pl <= 30) {
+        if (!topPullups || pl > (parseInt(topPullups.pullups_raw, 10) || 0)) {
+          topPullups = d;
+        }
+      } else {
+        if (!topFlexHang || pl > (parseInt(topFlexHang.pullups_raw, 10) || 0)) {
+          topFlexHang = d;
+        }
       }
     }
   });
@@ -266,6 +273,14 @@ export default function Dashboard() {
       icon: <PullupStickman color="#ff4757" />,
       color: '#ff4757',
       bg: 'rgba(255, 71, 87, 0.15)'
+    },
+    {
+      title: "Best Flex Hang",
+      cadet: topFlexHang,
+      score: topFlexHang ? `${topFlexHang.pullups_raw}s` : '—',
+      icon: <PullupStickman color="#ec4899" />,
+      color: '#ec4899',
+      bg: 'rgba(236, 72, 153, 0.15)'
     }
   ];
 
