@@ -642,3 +642,28 @@ h3 { font-size: 1.25rem; }
   50% { transform: translateY(-6px); }
 }
 .anim-pullups { animation: pullups 1.2s ease-in-out infinite; display: inline-block; }
+/* Stickman Animations */
+@keyframes stick-pushup {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(15deg); }
+}
+@keyframes stick-pushup-arms {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.6); }
+}
+@keyframes stick-situp {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-45deg); }
+}
+@keyframes stick-run-leg1 {
+  0%, 100% { transform: rotate(-30deg); }
+  50% { transform: rotate(30deg); }
+}
+@keyframes stick-run-leg2 {
+  0%, 100% { transform: rotate(30deg); }
+  50% { transform: rotate(-30deg); }
+}
+@keyframes stick-pullup {
+  0%, 100% { transform: translateY(15px); }
+  50% { transform: translateY(0px); }
+}

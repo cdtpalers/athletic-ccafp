@@ -45,6 +45,54 @@ function parseCSV(csv) {
   });
 }
 
+// --- Animated Stickman Components ---
+const PushupStickman = ({ color }) => (
+  <svg width="48" height="48" viewBox="0 0 100 100" style={{ color }}>
+    <line x1="10" y1="80" x2="90" y2="80" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+    <g style={{ animation: 'stick-pushup 1.5s infinite ease-in-out', transformOrigin: '20px 80px' }}>
+      <circle cx="75" cy="40" r="8" fill="currentColor" />
+      <line x1="70" y1="45" x2="20" y2="80" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+      <line x1="60" y1="55" x2="60" y2="80" stroke="currentColor" strokeWidth="4" strokeLinecap="round" style={{ animation: 'stick-pushup-arms 1.5s infinite ease-in-out', transformOrigin: '60px 80px' }} />
+    </g>
+  </svg>
+);
+
+const SitupStickman = ({ color }) => (
+  <svg width="48" height="48" viewBox="0 0 100 100" style={{ color }}>
+    <line x1="10" y1="80" x2="90" y2="80" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+    <path d="M 50 80 L 70 50 L 85 80" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+    <g style={{ animation: 'stick-situp 1.5s infinite ease-in-out', transformOrigin: '50px 80px' }}>
+      <circle cx="25" cy="40" r="8" fill="currentColor" />
+      <line x1="30" y1="45" x2="50" y2="80" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+    </g>
+  </svg>
+);
+
+const RunStickman = ({ color }) => (
+  <svg width="48" height="48" viewBox="0 0 100 100" style={{ color }}>
+    <circle cx="50" cy="20" r="8" fill="currentColor" />
+    <line x1="50" y1="28" x2="50" y2="60" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+    <line x1="50" y1="60" x2="35" y2="90" stroke="currentColor" strokeWidth="6" strokeLinecap="round" style={{ animation: 'stick-run-leg1 0.6s infinite linear', transformOrigin: '50px 60px' }} />
+    <line x1="50" y1="60" x2="65" y2="90" stroke="currentColor" strokeWidth="6" strokeLinecap="round" style={{ animation: 'stick-run-leg2 0.6s infinite linear', transformOrigin: '50px 60px' }} />
+    <line x1="50" y1="35" x2="30" y2="50" stroke="currentColor" strokeWidth="4" strokeLinecap="round" style={{ animation: 'stick-run-leg2 0.6s infinite linear', transformOrigin: '50px 35px' }} />
+    <line x1="50" y1="35" x2="70" y2="50" stroke="currentColor" strokeWidth="4" strokeLinecap="round" style={{ animation: 'stick-run-leg1 0.6s infinite linear', transformOrigin: '50px 35px' }} />
+  </svg>
+);
+
+const PullupStickman = ({ color }) => (
+  <svg width="48" height="48" viewBox="0 0 100 100" style={{ color }}>
+    <line x1="20" y1="20" x2="80" y2="20" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+    <g style={{ animation: 'stick-pullup 1.5s infinite ease-in-out' }}>
+      <circle cx="50" cy="35" r="8" fill="currentColor" />
+      <line x1="50" y1="43" x2="50" y2="80" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+      <line x1="50" y1="80" x2="40" y2="100" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+      <line x1="50" y1="80" x2="60" y2="100" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+      <path d="M 30 20 L 40 45 L 50 45" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M 70 20 L 60 45 L 50 45" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    </g>
+  </svg>
+);
+
 function timeToSec(timeStr) {
   if (!timeStr || timeStr === '0:00' || timeStr === '00:00') return Infinity;
   const parts = timeStr.split(':');
@@ -191,7 +239,7 @@ export default function Dashboard() {
       title: "Best Push-ups",
       cadet: topPushups,
       score: topPushups ? topPushups.pushups_raw : '—',
-      icon: <ArrowUpFromLine size={48} className="anim-pushups" color="var(--accent-primary)" />,
+      icon: <PushupStickman color="var(--accent-primary)" />,
       color: 'var(--accent-primary)',
       bg: 'rgba(56, 189, 248, 0.15)' 
     },
@@ -199,7 +247,7 @@ export default function Dashboard() {
       title: "Best Sit-ups",
       cadet: topSitups,
       score: topSitups ? topSitups.situps_raw : '—',
-      icon: <RotateCcw size={48} className="anim-situps" color="#9d7cff" />,
+      icon: <SitupStickman color="#9d7cff" />,
       color: '#9d7cff',
       bg: 'rgba(157, 124, 255, 0.15)'
     },
@@ -207,7 +255,7 @@ export default function Dashboard() {
       title: "Best Run",
       cadet: topRun,
       score: topRun ? topRun.run_time : '—',
-      icon: <Zap size={48} className="anim-run" color="#FBBF24" />,
+      icon: <RunStickman color="#FBBF24" />,
       color: '#FBBF24',
       bg: 'rgba(251, 191, 36, 0.15)'
     },
@@ -215,7 +263,7 @@ export default function Dashboard() {
       title: "Best Pull-ups",
       cadet: topPullups,
       score: topPullups ? topPullups.pullups_raw : '—',
-      icon: <ArrowUp size={48} className="anim-pullups" color="#ff4757" />,
+      icon: <PullupStickman color="#ff4757" />,
       color: '#ff4757',
       bg: 'rgba(255, 71, 87, 0.15)'
     }
@@ -384,15 +432,15 @@ export default function Dashboard() {
       ) : (
         <div style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
-          gap: '1.5rem' 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
+          gap: '1rem' 
         }}>
           {hallOfFame.map((fame, i) => (
             <div 
               key={i} 
               className="glass-card" 
               style={{ 
-                padding: '2.5rem 2rem', 
+                padding: '1.5rem 1rem', 
                 position: 'relative', 
                 overflow: 'hidden', 
                 display: 'flex', 
@@ -402,7 +450,7 @@ export default function Dashboard() {
                 gridColumn: i === 0 ? '1 / -1' : 'auto', // Top Cadet spans full width
                 background: i === 0 ? 'linear-gradient(145deg, rgba(251, 191, 36, 0.1) 0%, var(--surface-glass) 100%)' : 'var(--surface-glass)',
                 border: i === 0 ? '1px solid rgba(251, 191, 36, 0.3)' : '1px solid var(--surface-border)',
-                minHeight: i === 0 ? '340px' : '300px',
+                minHeight: i === 0 ? '240px' : '220px',
                 boxShadow: i === 0 ? '0 10px 40px rgba(251, 191, 36, 0.1)' : 'var(--shadow-md)',
                 borderRadius: '24px',
                 transition: 'transform 0.3s ease, box-shadow 0.3s ease'
@@ -424,9 +472,9 @@ export default function Dashboard() {
 
               {/* Icon Container */}
               <div style={{ 
-                marginBottom: '1.5rem', 
+                marginBottom: '1rem', 
                 background: fame.bg, 
-                padding: '1.25rem', 
+                padding: '1rem', 
                 borderRadius: '50%', 
                 display: 'inline-flex',
                 boxShadow: `0 0 20px ${fame.bg}`
@@ -436,10 +484,10 @@ export default function Dashboard() {
 
               <h4 style={{ 
                 color: fame.color, 
-                fontSize: i === 0 ? '1.5rem' : '1.1rem', 
+                fontSize: i === 0 ? '1.25rem' : '1rem', 
                 textTransform: 'uppercase', 
-                letterSpacing: '2px', 
-                marginBottom: '1.5rem',
+                letterSpacing: '1.5px', 
+                marginBottom: '1rem',
                 fontWeight: 800
               }}>
                 {fame.title}
