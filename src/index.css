@@ -616,3 +616,29 @@ h3 { font-size: 1.25rem; }
     text-align: center;
   }
 }
+
+/* PFT Event Animations */
+@keyframes pushups {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+.anim-pushups { animation: pushups 1s ease-in-out infinite; display: inline-block; }
+
+@keyframes situps {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(30deg); }
+}
+.anim-situps { animation: situps 1.5s ease-in-out infinite; transform-origin: bottom center; display: inline-block; }
+
+@keyframes run {
+  0% { transform: translateX(-4px) skewX(0deg); }
+  50% { transform: translateX(4px) skewX(-10deg); }
+  100% { transform: translateX(-4px) skewX(0deg); }
+}
+.anim-run { animation: run 0.8s ease-in-out infinite; display: inline-block; }
+
+@keyframes pullups {
+  0%, 100% { transform: translateY(6px); }
+  50% { transform: translateY(-6px); }
+}
+.anim-pullups { animation: pullups 1.2s ease-in-out infinite; display: inline-block; }

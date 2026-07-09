@@ -1,17 +1,6 @@
-import { Bell, AlertCircle, TrendingUp, Quote, Home, Activity } from 'lucide-react';
+import { Home, Activity, TrendingUp, Bell, ArrowUpFromLine, RotateCcw, Zap, ArrowUp, Crown, Trophy } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const ACADEMIC_QUOTES = [
-  { text: "The beautiful thing about learning is that no one can take it away from you.", author: "B.B. King" },
-  { text: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela" },
-  { text: "The mind is not a vessel to be filled, but a fire to be kindled.", author: "Plutarch" },
-  { text: "Excellence is not a gift, but a skill that takes practice. We are what we repeatedly do.", author: "Aristotle" },
-  { text: "Innovation distinguishes between a leader and a follower.", author: "Steve Jobs" },
-  { text: "Education is not the filling of a pail, but the lighting of a fire.", author: "W.B. Yeats" },
-  { text: "The only limit to our realization of tomorrow will be our doubts of today.", author: "Franklin D. Roosevelt" },
-  { text: "An investment in knowledge pays the best interest.", author: "Benjamin Franklin" }
-];
 
 // A lightweight CSV parser to handle quotes and commas properly
 function parseCSV(csv) {
@@ -56,31 +45,67 @@ function parseCSV(csv) {
   });
 }
 
+function timeToSec(timeStr) {
+  if (!timeStr || timeStr === '0:00' || timeStr === '00:00') return Infinity;
+  const parts = timeStr.split(':');
+  if (parts.length === 2) {
+    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+  }
+  return Infinity;
+}
+
+const customAnimations = `
+  @keyframes pushupPop {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-8px) scale(1.1); }
+    100% { transform: translateY(0) scale(1); }
+  }
+  @keyframes situpRock {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(-20deg); }
+    75% { transform: rotate(20deg); }
+    100% { transform: rotate(0deg); }
+  }
+  @keyframes zapPulse {
+    0% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 5px #FBBF24); }
+    50% { transform: scale(1.2) rotate(15deg); filter: drop-shadow(0 0 20px #FBBF24); }
+    100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 5px #FBBF24); }
+  }
+  @keyframes pullupRise {
+    0% { transform: translateY(5px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(5px); }
+  }
+  .anim-pushups {
+    animation: pushupPop 1.5s ease-in-out infinite;
+  }
+  .anim-situps {
+    animation: situpRock 2s ease-in-out infinite;
+  }
+  .anim-run {
+    animation: zapPulse 1.5s infinite;
+  }
+  .anim-pullups {
+    animation: pullupRise 2s ease-in-out infinite;
+  }
+`;
+
 export default function Dashboard() {
-  const [announcements, setAnnouncements] = useState([]);
   const [pftData, setPftData] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // 🔴 PASTE YOUR CSV LINKS HERE (Same as the ones in other pages)
-  const ANNOUNCEMENTS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQODxASqFgFWPJObis_gXQ-mcN31Kfqn1p0rRriC00czwJ_QZadUp1MQscXRGVwB1vZKP0xAvsBJI3J/pub?gid=0&single=true&output=csv';
+  const [classTab, setClassTab] = useState('Overall');
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const fetchCSV = async (url) => {
-          if (!url) return [];
-          const res = await fetch(url);
-          return parseCSV(await res.text());
-        };
-
-        const [annData, pftRaw] = await Promise.all([
-          fetchCSV(ANNOUNCEMENTS_CSV_URL),
-          fetchCSV('/pft_results.csv')
-        ]);
-
-        setAnnouncements(annData);
-        setPftData(pftRaw);
-
+        const res = await fetch('/pft_results.csv');
+        if (res.ok) {
+          const text = await res.text();
+          setPftData(parseCSV(text));
+        } else {
+          console.error("Failed to fetch /pft_results.csv");
+        }
         setLoading(false);
       } catch (error) {
         console.error("Error fetching dash data:", error);
@@ -90,22 +115,117 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  const navigate = useNavigate();
-
-  const testedCadets = pftData.filter(d => d.pft_total && d.pft_total !== '');
+  const testedCadets = pftData.filter(d => d.pft_total && d.pft_total.trim() !== '');
   const avgPft = testedCadets.length > 0
     ? (testedCadets.reduce((s, d) => s + parseFloat(d.pft_total), 0) / testedCadets.length).toFixed(2)
     : '—';
 
   const stats = [
-    { label: 'Active Announcements', value: announcements.length || '0', icon: <Bell size={16} />, trend: 'View Feed', path: '/announcements' },
     { label: 'Avg PFT Score', value: avgPft, icon: <Activity size={16} />, trend: testedCadets.length + ' cadets tested', path: '/deficiencies' },
     { label: 'Upcoming Classes', value: '12', icon: <TrendingUp size={16} />, trend: 'Steady', path: '/schedule' },
     { label: 'Council Activity', value: '89%', icon: <Bell size={16} />, trend: '+2% This week', path: '/' },
   ];
 
+  // Calculate Winners
+  const filteredData = classTab === 'Overall' ? pftData : pftData.filter(d => d.class === classTab);
+
+  let topCadet = null;
+  let topPushups = null;
+  let topSitups = null;
+  let topRun = null;
+  let topPullups = null;
+
+  filteredData.forEach(d => {
+    // Top Cadet
+    if (d.pft_total && d.pft_total.trim() !== '') {
+      const total = parseFloat(d.pft_total) || 0;
+      if (!topCadet || total > (parseFloat(topCadet.pft_total) || 0)) {
+        topCadet = d;
+      }
+    }
+
+    // Top Pushups
+    if (d.pushups_raw && d.pushups_raw.trim() !== '') {
+      const pu = parseInt(d.pushups_raw, 10) || 0;
+      if (!topPushups || pu > (parseInt(topPushups.pushups_raw, 10) || 0)) {
+        topPushups = d;
+      }
+    }
+
+    // Top Situps
+    if (d.situps_raw && d.situps_raw.trim() !== '') {
+      const su = parseInt(d.situps_raw, 10) || 0;
+      if (!topSitups || su > (parseInt(topSitups.situps_raw, 10) || 0)) {
+        topSitups = d;
+      }
+    }
+
+    // Top Run
+    const rSec = timeToSec(d.run_time);
+    if (rSec !== Infinity) {
+      const currBestSec = topRun ? timeToSec(topRun.run_time) : Infinity;
+      if (rSec < currBestSec) {
+        topRun = d;
+      }
+    }
+
+    // Top Pullups
+    if (d.pullups_raw && d.pullups_raw.trim() !== '') {
+      const pl = parseInt(d.pullups_raw, 10) || 0;
+      if (!topPullups || pl > (parseInt(topPullups.pullups_raw, 10) || 0)) {
+        topPullups = d;
+      }
+    }
+  });
+
+  const hallOfFame = [
+    {
+      title: "Top Cadet",
+      cadet: topCadet,
+      score: topCadet ? parseFloat(topCadet.pft_total).toFixed(3) : '—',
+      icon: <Crown size={64} style={{ color: '#FBBF24' }} />,
+      color: '#FBBF24',
+      bg: 'rgba(251, 191, 36, 0.15)'
+    },
+    {
+      title: "Best Push-ups",
+      cadet: topPushups,
+      score: topPushups ? topPushups.pushups_raw : '—',
+      icon: <ArrowUpFromLine size={48} className="anim-pushups" color="var(--accent-primary)" />,
+      color: 'var(--accent-primary)',
+      bg: 'rgba(56, 189, 248, 0.15)' 
+    },
+    {
+      title: "Best Sit-ups",
+      cadet: topSitups,
+      score: topSitups ? topSitups.situps_raw : '—',
+      icon: <RotateCcw size={48} className="anim-situps" color="#9d7cff" />,
+      color: '#9d7cff',
+      bg: 'rgba(157, 124, 255, 0.15)'
+    },
+    {
+      title: "Best Run",
+      cadet: topRun,
+      score: topRun ? topRun.run_time : '—',
+      icon: <Zap size={48} className="anim-run" color="#FBBF24" />,
+      color: '#FBBF24',
+      bg: 'rgba(251, 191, 36, 0.15)'
+    },
+    {
+      title: "Best Pull-ups",
+      cadet: topPullups,
+      score: topPullups ? topPullups.pullups_raw : '—',
+      icon: <ArrowUp size={48} className="anim-pullups" color="#ff4757" />,
+      color: '#ff4757',
+      bg: 'rgba(255, 71, 87, 0.15)'
+    }
+  ];
+
   return (
     <div className="dashboard" style={{ marginTop: '1rem' }}>
+      <style>{customAnimations}</style>
+      
+      {/* Header */}
       <div className="flex-between" style={{ marginBottom: '2.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <div style={{ background: 'var(--accent-primary)', color: '#1a1a1a', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -128,11 +248,12 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Stats Cards */}
       <div style={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
         gap: '1.5rem', 
-        marginBottom: '2.5rem' 
+        marginBottom: '3rem' 
       }}>
         {stats.map((stat, i) => (
           <div 
@@ -151,7 +272,6 @@ export default function Dashboard() {
               borderRadius: '24px'
             }}
           >
-            {/* Subtle Gradient Glow for First Card */}
             {i === 0 && (
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at top left, rgba(255,255,255,0.4) 0%, transparent 60%)', pointerEvents: 'none' }} />
             )}
@@ -207,54 +327,167 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {(() => {
-        const todayIdx = new Date().getDate() % ACADEMIC_QUOTES.length;
-        const dailyQuote = ACADEMIC_QUOTES[todayIdx];
-        return (
-          <div className="glass-panel modal-inner" style={{ padding: '2rem', marginBottom: '2rem', display: 'flex', flexWrap: 'wrap', gap: '1.5rem', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: '-15px', right: '-15px', opacity: 0.05, transform: 'rotate(-20deg)' }}>
-              <Quote size={120} weight="fill" />
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-color)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--surface-border)', flexShrink: 0 }}>
-              <Quote className="text-accent-primary" size={24} />
-            </div>
-            <div>
-              <p style={{ fontSize: '1.15rem', color: 'var(--text-primary)', fontWeight: 500, fontStyle: 'italic', marginBottom: '0.5rem', lineHeight: 1.6 }}>
-                "{dailyQuote.text}"
-              </p>
-              <p className="text-muted" style={{ fontSize: '0.875rem', fontWeight: 600 }}>
-                — {dailyQuote.author}
-              </p>
-            </div>
-          </div>
-        );
-      })()}
-
-      <div className="grid-cols-2">
-        <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <h3 style={{ marginBottom: '1rem' }}>Recent Announcements</h3>
-          <div className="announcement-list">
-            {loading ? (
-              <p className="text-muted" style={{ padding: '1rem' }}>Loading from Sheets...</p>
-            ) : announcements.length === 0 ? (
-              <p className="text-muted" style={{ padding: '1rem' }}>No recent announcements.</p>
-            ) : (
-              announcements.slice(0, 3).map((ann, i) => (
-                <div key={i} style={{ padding: '1rem', borderBottom: i !== Math.min(announcements.length, 3) - 1 ? '1px solid var(--surface-border)' : 'none' }}>
-                  <span className={`badge badge-${ann.type?.toLowerCase() || 'info'}`} style={{ marginBottom: '0.5rem' }}>
-                    {ann.type?.toUpperCase() || 'INFO'}
-                  </span>
-                  <h4>{ann.title}</h4>
-                  <p className="text-muted" style={{ fontSize: '0.875rem', marginTop: '0.25rem' }}>
-                    {ann.content ? ann.content.substring(0, 60) + '...' : ''}
-                  </p>
-                </div>
-              ))
-            )}
-          </div>
+      {/* PFT Leaderboard Header */}
+      <div className="flex-between" style={{ marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <h2 style={{ 
+          fontSize: '2rem', 
+          margin: 0, 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '0.75rem',
+          color: 'var(--text-primary)',
+          fontWeight: 800
+        }}>
+          <Trophy size={32} color="var(--accent-primary)" />
+          PFT Hall of Fame
+        </h2>
+        
+        {/* Class Tabs */}
+        <div style={{ 
+          display: 'flex', 
+          background: 'rgba(0,0,0,0.2)', 
+          padding: '0.35rem', 
+          borderRadius: '16px', 
+          gap: '0.35rem', 
+          border: '1px solid var(--surface-border)',
+          boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.2)'
+        }}>
+          {['Overall', '1CL', '2CL', '3CL'].map(tab => (
+            <button
+              key={tab}
+              onClick={() => setClassTab(tab)}
+              style={{
+                background: classTab === tab ? 'var(--accent-primary)' : 'transparent',
+                color: classTab === tab ? '#1a1a1a' : 'var(--text-primary)',
+                border: 'none',
+                padding: '0.5rem 1.25rem',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                fontWeight: 700,
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                fontSize: '0.9rem',
+                boxShadow: classTab === tab ? '0 4px 15px rgba(56, 189, 248, 0.3)' : 'none'
+              }}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
-
       </div>
+
+      {/* Hall of Fame Display */}
+      {loading ? (
+        <div className="glass-panel flex-center" style={{ padding: '4rem', color: 'var(--accent-primary)' }}>
+          <Activity size={48} className="anim-run" />
+          <h3 style={{ marginLeft: '1rem' }}>Loading Leaderboard...</h3>
+        </div>
+      ) : (
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+          gap: '1.5rem' 
+        }}>
+          {hallOfFame.map((fame, i) => (
+            <div 
+              key={i} 
+              className="glass-card" 
+              style={{ 
+                padding: '2.5rem 2rem', 
+                position: 'relative', 
+                overflow: 'hidden', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                textAlign: 'center',
+                gridColumn: i === 0 ? '1 / -1' : 'auto', // Top Cadet spans full width
+                background: i === 0 ? 'linear-gradient(145deg, rgba(251, 191, 36, 0.1) 0%, var(--surface-glass) 100%)' : 'var(--surface-glass)',
+                border: i === 0 ? '1px solid rgba(251, 191, 36, 0.3)' : '1px solid var(--surface-border)',
+                minHeight: i === 0 ? '340px' : '300px',
+                boxShadow: i === 0 ? '0 10px 40px rgba(251, 191, 36, 0.1)' : 'var(--shadow-md)',
+                borderRadius: '24px',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-5px)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+            >
+              {/* Background watermark icon */}
+              <div style={{ 
+                position: 'absolute', 
+                top: '-30px', 
+                right: '-30px', 
+                opacity: 0.03, 
+                transform: 'rotate(15deg) scale(2.5)',
+                pointerEvents: 'none'
+              }}>
+                {fame.icon}
+              </div>
+
+              {/* Icon Container */}
+              <div style={{ 
+                marginBottom: '1.5rem', 
+                background: fame.bg, 
+                padding: '1.25rem', 
+                borderRadius: '50%', 
+                display: 'inline-flex',
+                boxShadow: `0 0 20px ${fame.bg}`
+              }}>
+                {fame.icon}
+              </div>
+
+              <h4 style={{ 
+                color: fame.color, 
+                fontSize: i === 0 ? '1.5rem' : '1.1rem', 
+                textTransform: 'uppercase', 
+                letterSpacing: '2px', 
+                marginBottom: '1.5rem',
+                fontWeight: 800
+              }}>
+                {fame.title}
+              </h4>
+
+              {fame.cadet ? (
+                <>
+                  <div style={{ 
+                    fontSize: i === 0 ? '2.8rem' : '1.8rem', 
+                    fontWeight: 800, 
+                    color: 'var(--text-primary)', 
+                    marginBottom: '0.75rem',
+                    lineHeight: 1.1,
+                    textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+                  }}>
+                    {fame.cadet.cadet}
+                  </div>
+                  
+                  <div className="flex-center text-muted" style={{ gap: '0.75rem', fontSize: '0.9rem', marginBottom: '2rem', fontWeight: 600 }}>
+                    <span style={{ background: 'rgba(255,255,255,0.05)', padding: '0.35rem 0.8rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                      {fame.cadet.class}
+                    </span>
+                    <span style={{ background: 'rgba(255,255,255,0.05)', padding: '0.35rem 0.8rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                      Co. {fame.cadet.company}
+                    </span>
+                  </div>
+
+                  <div style={{ 
+                    fontSize: i === 0 ? '4rem' : '3rem', 
+                    fontWeight: 900, 
+                    color: fame.color,
+                    marginTop: 'auto',
+                    lineHeight: 1,
+                    textShadow: `0 0 30px ${fame.color}50`
+                  }}>
+                    {fame.score}
+                  </div>
+                </>
+              ) : (
+                <div style={{ marginTop: 'auto', color: 'var(--text-muted)', fontSize: '1.2rem', fontStyle: 'italic' }}>
+                  No data available
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
     </div>
   );
 }
